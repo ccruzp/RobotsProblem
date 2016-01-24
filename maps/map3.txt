@@ -1,0 +1,11 @@
+10 14
+XXXXXXXXXXXXXX
+X############X
+X#XXXX#XXXXX#X
+X#X########X#X
+X#X#XX#XX##X#X
+X#X#X#X##X#X#X
+X#X########X#X
+X#XXXXXXXXXX#X
+X############X
+XXXXXXXXXXXXXX
