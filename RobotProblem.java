@@ -51,75 +51,80 @@ public class RobotProblem {
         return map;
     }    
 
-    // REVISAR PEO CON LAS CASILLAS QUE ESTA DEVOLVIENDO EL MÉTODO DE GETMOVEMENTS
+    // El problema está en la condición que controla los hijos. Los hijos no se están generando porque en el mapa está mostrando que pertenecena  la misma componente, ergo ya han sido revisados, ergo no se necesitan revisar. Tengo que pensar una mejor manera de controlar eso...
     public static boolean[] canBeExploredEfficiently(Map map, Robot r) {
 
-	Cell begin, current;
-	Queue<Cell> queue = new LinkedList<Cell>();
-	Stack<Cell> stack = new Stack<Cell>();
-	boolean[] found = new boolean[map.getRobotsNeeded()];
+    	Cell begin, current;
+    	Queue<Cell> queue = new LinkedList<Cell>();
+    	Stack<Cell> stack = new Stack<Cell>();
+    	boolean[] found = new boolean[map.getRobotsNeeded()];
 
-	for(int i = 0; i < map.getRobotsNeeded(); i++) {
-	    found[i] = false;
-	}
+    	for(int i = 0; i < map.getRobotsNeeded(); i++) {
+    	    found[i] = false;
+    	}
 
-	outerloop:
-	for(int i = 0; i < map.getRobotsNeeded(); i++) {
-	    for(int j = 0; j < map.n; j++) {
-		for(int k = 0; k < map.m; k++) {
-		    int[][] newMap = map.copyMap();
-		    begin = new Cell(j, k);
-		    current = begin.clone();
-		    Cell[] movements = r.getMovements(current);
-		    for(int l = 0; l < movements.length; l++) {
-			stack.push(movements[l]);
-		    }
-		    // queue = r.move(queue, map, current);
-		    // while(queue.peek() != null) {
-		    // 	Cell c = queue.poll();
-		    // 	System.out.println(c.toString());
-		    // 	stack.push(c);
-		    // }
-		    while(!stack.isEmpty()) {
-			current = stack.pop();
-			System.out.println(current.toString());
-			switch(newMap[current.getX()][current.getY()]) {
-			case -1:
-			    continue;
-			case 0:
-			    found[i] = checkComponent(newMap, map.getRobotsNeeded(), i);
-			    if(found[i]) continue outerloop;
-			    continue;
-			default:
-			    newMap[current.getX()][current.getY()] = 0;
-			    // queue = r.move(queue, map, current);
-			    movements = r.getMovements(current);
-			    for(int l = 0; l < movements.length; l++) {
-				stack.push(movements[l]);
-			    }
-			    // while(queue.peek() != null) {
-			    // 	stack.push(queue.poll());
-			    // }
-			}
-			found[i] = checkComponent(newMap, map.getRobotsNeeded(), i);
-		    }
-		}
-	    }
-	}
-	return found;
+    	outerloop:
+    	for(int i = 0; i < map.getRobotsNeeded(); i++) {
+    	    for(int j = 0; j < map.n; j++) {
+    		for(int k = 0; k < map.m; k++) {
+    		    int[][] newMap = map.copyMap();
+    		    begin = new Cell(j, k);
+    		    current = begin.clone();
+    		    // Cell[] movements = r.getMovements(current);
+    		    // for(int l = 0; l < movements.length; l++) {
+    		    // 	stack.push(movements[l]);
+    		    // }
+		    System.out.println("Begin: " + current.toString());
+    		    queue = r.move(queue, map, current);
+		    System.out.println("hijos? " + queue.peek());
+    		    while(queue.peek() != null) {
+    		    	Cell c = queue.poll();
+    		    	System.out.println("-------------------------\nFist queue: " + c.toString());
+    		    	stack.push(c);
+    		    }
+    		    while(!stack.isEmpty()) {
+    			current = stack.pop();
+    			System.out.println("-----------------------\nCurrent: " + current.toString());
+    			switch(newMap[current.getX()][current.getY()]) {
+    			case -1:
+    			    continue;
+    			case 0:
+    			    found[i] = checkComponent(newMap, map.getRobotsNeeded(), i);
+    			    if(found[i]) continue outerloop;
+    			    continue;
+    			default:
+    			    newMap[current.getX()][current.getY()] = 0;
+    			    queue = r.move(queue, map, current);
+    			    // movements = r.getMovements(current);
+    			    // for(int l = 0; l < movements.length; l++) {
+    			    // 	stack.push(movements[l]);
+    			    // }
+    			    while(queue.peek() != null) {
+				Cell c = queue.poll();
+				System.out.println("Children " + c.toString());
+    			    	stack.push(c);
+    			    }
+    			}
+			System.out.println("-----------------------\n");
+    			found[i] = checkComponent(newMap, map.getRobotsNeeded(), i);
+    		    }
+    		}
+    	    }
+    	}
+    	return found;
     }
 
     public static boolean checkComponent(int[][] map, int robotsNeeded, int component) {
 
-	boolean complete = true;
-	for(int i = 0; i < robotsNeeded && complete; i++) {
-	    for(int j = 0; j < map.length && complete; j++) {
-		for(int k = 0; k < map[0].length && complete; k++) {
-		    complete = (map[j][k] != component);
-		}
-	    }
-	}
-	return complete;
+    	boolean complete = true;
+    	for(int i = 0; i < robotsNeeded && complete; i++) {
+    	    for(int j = 0; j < map.length && complete; j++) {
+    		for(int k = 0; k < map[0].length && complete; k++) {
+    		    complete = (map[j][k] != component);
+    		}
+    	    }
+    	}
+    	return complete;
     }
     
     public static void main(String args[]) {
